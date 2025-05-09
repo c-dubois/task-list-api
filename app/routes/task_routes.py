@@ -13,7 +13,7 @@ def create_task():
     db.session.add(new_task)
     db.session.commit()
 
-    return new_task.to_dict(), 201
+    return {"task": new_task.to_dict()}, 201
 
 @task_bp.get("")
 def get_tasks():
@@ -41,30 +41,32 @@ def get_tasks():
     return tasks_response
 
 @task_bp.get("/<task_id>")
-def get_one_task(id):
-    task = validate_model(Task, id)
+def get_one_task(task_id):
+    task = validate_model(Task, task_id)
 
-    return task.to_dict()
+    return {"task": task.to_dict()}
     
 @task_bp.put("<task_id>")
-def update_task(id):
-    task = validate_model(Task, id)
+def update_task(task_id):
+    task = validate_model(Task, task_id)
     request_body = request.get_json()
 
-    task.title = request_body["title"]
-    task.description = request_body["description"]
-    task.completed_at = request_body["completed_at"]
+    if "title" in request_body:
+        task.title = request_body["title"]
+    if "description" in request_body:
+        task.description = request_body["description"]
+    if "completed_at" in request_body:
+        task.completed_at = request_body["completed_at"]
 
     db.session.commit()
-
     return "", 204
 # Another option is to return this: Response(status=204, mimetype="application/json")
 
-@task_bp.delete("/<task_id")
-def delete_task(id):
-    task = validate_model(Task, id)
+@task_bp.delete("/<task_id>")
+def delete_task(task_id):
+    task = validate_model(Task, task_id)
 
     db.session.delete(task)
-    db.session.commit
+    db.session.commit()
 
     return "", 204
