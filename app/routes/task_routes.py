@@ -31,7 +31,14 @@ def get_tasks():
     if completed_at_param:
         query = query.where(Task.completed_at.ilike(f"%{completed_at_param}%"))
 
-    query = query.order_by(Task.id)
+    sort_param = request.args.get("sort")
+    if sort_param == "asc":
+        query = query.order_by(Task.title.asc())
+    elif sort_param == "desc":
+        query = query.order_by(Task.title.desc())
+    else:
+        query = query.order_by(Task.id)
+
     tasks = db.session.scalars(query)
 
     tasks_response = []
