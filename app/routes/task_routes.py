@@ -83,7 +83,7 @@ def mark_task_complete(task_id):
 
     return "", 204
 
-@bp.patch("/<task_id>/mark_complete")
+@bp.patch("/<task_id>/mark_incomplete")
 def mark_task_incomplete(task_id):
     task = validate_model(Task, task_id)
 

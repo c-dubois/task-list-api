@@ -17,6 +17,7 @@ def test_get_tasks_sorted_asc(client, three_tasks):
             "description": "",
             "is_complete": False},
         {
+            "id": 3,
             "title": "Pay my outstanding tickets 😭",
             "description": "",
             "is_complete": False},
