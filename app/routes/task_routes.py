@@ -1,16 +1,17 @@
+from datetime import datetime
 from flask import Blueprint, Response, abort, make_response, request
 from app.models.task import Task
 from app.routes.routes_utilities import validate_model, create_model
 from ..db import db
 
-task_bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
+bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
-@task_bp.post("")
+@bp.post("")
 def create_task():
     request_body = request.get_json()
     return create_model(Task, request_body)
 
-@task_bp.get("")
+@bp.get("")
 def get_tasks():
     query = db.select(Task)
 
@@ -42,13 +43,13 @@ def get_tasks():
 
     return tasks_response
 
-@task_bp.get("/<task_id>")
+@bp.get("/<task_id>")
 def get_one_task(task_id):
     task = validate_model(Task, task_id)
 
     return {"task": task.to_dict()}
     
-@task_bp.put("<task_id>")
+@bp.put("<task_id>")
 def update_task(task_id):
     task = validate_model(Task, task_id)
     request_body = request.get_json()
@@ -64,11 +65,29 @@ def update_task(task_id):
     return "", 204
 # Another option is to return this: Response(status=204, mimetype="application/json")
 
-@task_bp.delete("/<task_id>")
+@bp.delete("/<task_id>")
 def delete_task(task_id):
     task = validate_model(Task, task_id)
 
     db.session.delete(task)
+    db.session.commit()
+
+    return "", 204
+
+@bp.patch("/<task_id>/mark_complete")
+def mark_task_complete(task_id):
+    task = validate_model(Task, task_id)
+
+    task.completed_at = datetime.now()
+    db.session.commit()
+
+    return "", 204
+
+@bp.patch("/<task_id>/mark_complete")
+def mark_task_incomplete(task_id):
+    task = validate_model(Task, task_id)
+
+    task.completed_at = None
     db.session.commit()
 
     return "", 204
