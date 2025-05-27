@@ -55,7 +55,7 @@ Making an app should bring you to a new page that lists "Add features and functi
 After seeing the header "Add features and functionality" and expanding it, click "Permissions."
 
 ![](assets/slackbot_scroll_to_permissions.png)
-
+k
 Scroll down to "Scopes" and "Bot Token Scopes"
 
 ![](assets/slackbot_scopes_empty.png)

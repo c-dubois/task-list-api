@@ -1,8 +1,13 @@
 from datetime import datetime
+import requests
+import os
+from dotenv import load_dotenv
 from flask import Blueprint, Response, abort, make_response, request
 from app.models.task import Task
 from app.routes.routes_utilities import validate_model, create_model
 from ..db import db
+
+load_dotenv() 
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
@@ -80,6 +85,26 @@ def mark_task_complete(task_id):
 
     task.completed_at = datetime.now()
     db.session.commit()
+
+    slackbot_token = os.environ.get("SLACKBOT_TOKEN")
+    # if not slackbot_token:
+    #     print("no token found")
+    #     return "", 204
+    
+    message_text = f"Someone just completed the task \"{task.title}\""
+    slack_url = "https://slack.com/api/chat.postMessage"
+    headers = {
+        "Authorization": f"Bearer {slackbot_token}"
+    }
+    payload = {
+        "channel": "test-slack-api",
+        "text": message_text
+    }
+
+    try:
+        response = requests.post(slack_url, headers=headers, json=payload)
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to send Slack notification: {str(e)}")
 
     return "", 204
 
