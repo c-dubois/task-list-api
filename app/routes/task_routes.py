@@ -20,9 +20,9 @@ def create_task():
 def get_tasks():
     query = db.select(Task)
 
-    name_param = request.args.get("title")
-    if name_param:
-        query = query.where(Task.title.ilike(f"%{name_param}%"))
+    title_param = request.args.get("title")
+    if title_param:
+        query = query.where(Task.title.ilike(f"%{title_param}%"))
 
     description_param = request.args.get("description")
     if description_param:
