@@ -25,7 +25,7 @@ def create_model(cls, model_data):
 
     missing_fields = [field for field in required_fields[cls.__name__] if field not in model_data]
     if missing_fields:
-        abort(make_response({"details": f"Missing required field(s): {", ".join(missing_fields)}"}, 400))
+        abort(make_response({"details": f"Missing required field(s): {', '.join(missing_fields)}"}, 400))
 
     try:
         new_model = cls.from_dict(model_data)
