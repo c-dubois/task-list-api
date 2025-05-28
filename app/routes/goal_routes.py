@@ -1,5 +1,6 @@
 from flask import Blueprint, Response, abort, make_response, request
 from app.models.goal import Goal
+from app.models.task import Task
 from app.routes.routes_utilities import validate_model, create_model
 from ..db import db
 
@@ -60,3 +61,32 @@ def delete_task(goal_id):
     db.session.commit()
 
     return "", 204
+
+@bp.post("/<goal_id>/tasks")
+def add_tasks_to_goal(goal_id):
+    goal = validate_model(Goal, goal_id)
+    request_body = request.get_json()
+
+    if "task_ids" not in request_body:
+        abort(make_response({"message": "Missing required field: task_ids"}, 400))
+
+    tasks = []
+    for task_id in request_body["task_ids"]:
+        task = validate_model(Task, task_id)
+        tasks.append(task)
+
+    for task in tasks:
+        task.goal_id = goal.id
+
+    db.session.commit()
+    
+    return {
+        "id": goal.id,
+        "task_ids": request_body["task_ids"]
+    }
+
+@bp.get("/<goal_id>/tasks")
+def get_all_tasks_under_goal(goal_id):
+    goal = validate_model(Goal, goal_id)
+    response = [task.to_dict() for task in goal.tasks]
+    return response
