@@ -18,7 +18,12 @@ def validate_model(cls, model_id):
     return model
 
 def create_model(cls, model_data):
-    missing_fields = [field for field in ["title", "description"] if field not in model_data]
+    required_fields = {
+        "Task": ["title", "description"],
+        "Goal": ["title"]
+    }
+
+    missing_fields = [field for field in required_fields[cls.__name__] if field not in model_data]
     if missing_fields:
         abort(make_response({"details": f"Missing required field(s): {", ".join(missing_fields)}"}, 400))
 
